@@ -25,7 +25,7 @@ from aiogram import types
 router = Router()
 
 # 🧑‍💼 Faqat shu ID dagi foydalanuvchilar admin hisoblanadi
-admins = [6396620190]
+admins = [6396620190,5633405041]
 
 
 @router.message(F.text == "/start")
@@ -72,7 +72,7 @@ async def product_selected(call: CallbackQuery, state: FSMContext):
         await state.set_state(ProductStates.choosing_amount)
         await call.message.answer_photo(
             photo=image,
-            caption=f"📦 {maxsulot}\n💰 Narxi: {pr} so‘m\n\n📝 {dec}\n\nNechta olmoqchisiz?",
+            caption=f"📦 {maxsulot}\n💰 Narxi: {pr} so‘m (kg)\n\n📝 {dec}\n\nNechta olmoqchisiz?",
             reply_markup=MenuInline()
         )
     else:
@@ -129,7 +129,7 @@ async def show_cart(call: CallbackQuery):
         # item: (id, user_id, product_id, product_name, total_price, count)
         text += f"{item[3]} — {item[5]} ta — {item[4]} so‘m\n"
         total += item[4]
-    text += f"\n💰 Jami: {total} so‘m"
+    text += f"\n💰 Jami: {total} so‘m "
 
     await call.message.answer(text, reply_markup=buyurtma)
 
