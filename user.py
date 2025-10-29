@@ -13,14 +13,6 @@ from aiogram import types
 
 
 
-# router = Router()
-
-# from aiogram import Router, F
-# from aiogram.types import Message
-# from aiogram.filters import Command
-# from aiogram.fsm.context import FSMContext
-# from aiogram.fsm.state import State, StatesGroup
-# from aiogram import types
 
 router = Router()
 
@@ -211,30 +203,55 @@ async def add_desc(message: Message, state: FSMContext):
 #     await message.answer("📝 Mahsulot haqida qisqacha izoh yozing:")
 #     await state.set_state(AddProduct.description)
 
+# @router.message(AddProduct.image)
+# async def add_image(message: Message, state: FSMContext):
+#     if not message.photo:
+#         await message.answer("❗ Iltimos, rasm yuboring.")
+#         return
+
+#     photo = message.photo[-1]
+#     file_id = photo.file_id
+
+#     data = await state.get_data()
+#     name = data["name"]
+#     price = data["price"]
+#     desc = data["desc"]
+
+  
+#     add_product(name, price, file_id, desc)
+
+#     await message.answer(f"✅ Mahsulot qo‘shildi:\n\n📦 {name}\n💰 {price} so‘m\n📝 {desc}")
+#     await state.clear()
+
+
+
 @router.message(AddProduct.image)
 async def add_image(message: Message, state: FSMContext):
-    if not message.photo:
-        await message.answer("❗ Iltimos, rasm yuboring.")
-        return
+    # Agar foydalanuvchi rasm yuborsa
+    if message.photo:
+        photo = message.photo[-1]
+        image = photo.file_id  # Telegram file_id saqlanadi
+    else:
+        # Agar foydalanuvchi rasm ssilkasini yuborsa
+        image = message.text.strip()
+        # Tekshiramiz: bu URLmi?
+        if not (image.startswith("http://") or image.startswith("https://")):
+            await message.answer("❗ Iltimos, rasm yuboring yoki to‘g‘ri rasm URL manzilini kiriting.")
+            return
 
-    photo = message.photo[-1]
-    file_id = photo.file_id
-
+    # Oldingi ma'lumotlarni olish
     data = await state.get_data()
     name = data["name"]
     price = data["price"]
     desc = data["desc"]
 
-  
-    add_product(name, price, file_id, desc)
+    # Bazaga yozamiz
+    add_product(name, price, image, desc)
 
-    await message.answer(f"✅ Mahsulot qo‘shildi:\n\n📦 {name}\n💰 {price} so‘m\n📝 {desc}")
+    # Tasdiq xabari
+    await message.answer_photo(
+        photo=image,
+        caption=f"✅ Mahsulot qo‘shildi!\n\n📦 {name}\n💰 {price} so‘m\n📝 {desc}"
+    )
+
     await state.clear()
-
-
-
-
-
-
-
-
